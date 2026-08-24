@@ -9,6 +9,7 @@ Notes are grouped by topic:
 - ⚙️ **dotnet** — C# and .NET platform, EF Core, and concurrency
 - 🐘 **databases** — SQL, relational fundamentals, and PostgreSQL
 - 🧮 **algorithms** — searching, sorting, and interview algorithm patterns
+- ☁️ **aws** — AWS Solutions Architect certification (Associate + Professional)
 
 ## 📖 Catalog
 
@@ -25,3 +26,8 @@ Notes are grouped by topic:
 ### 🧮 algorithms/
 
 - [Standard_Algorithms.md](algorithms/Standard_Algorithms.md) — Searching, sorting, and interview algorithm patterns
+
+### ☁️ aws/
+
+- [AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md](aws/AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md) — SAA-C03 exam reference: domains, scenarios, quotas, SDK/IaC code patterns, 8-week plan
+- [AWS_Solutions_Architect_Professional_SAP-C02_Cheat_Sheet.md](aws/AWS_Solutions_Architect_Professional_SAP-C02_Cheat_Sheet.md) — SAP-C02 professional addendum: org complexity, guardrails as code, migration, 6-week plan
