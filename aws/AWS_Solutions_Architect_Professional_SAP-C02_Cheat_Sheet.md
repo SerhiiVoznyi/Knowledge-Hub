@@ -1,81 +1,133 @@
-# AWS Solutions Architect Professional (SAP-C02) Cheat Sheet
+# AWS at Organizational Scale: Architecture and the SAP-C02 Exam
 
-A certification addendum for the **AWS Certified Solutions Architect – Professional (SAP-C02)** exam. Assumes fluency from the [SAA-C03 Associate guide](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md) and goes deeper on **organizational complexity**, **greenfield design**, **continuous improvement**, and **migration/modernization**.
+A course-style companion to the [Associate guide](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md), covering what changes when one workload in one account becomes hundreds of workloads across hundreds of accounts. Parts I to VIII teach the organization-scale services and disciplines — Organizations and policy, networking at scale, security and governance, resilience across a portfolio, migration and modernization, and platform automation. Part IX is everything specific to the **AWS Certified Solutions Architect – Professional (SAP-C02)** exam, including 30 scenario questions with distractor analysis.
 
-> **Prerequisite:** Complete the [SAA-C03 cheat sheet](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md) first. This guide does not re-teach basic service selection (S3 vs EBS, SQS vs SNS, etc.) — it focuses on multi-account, hybrid, migration sequencing, and multi-constraint trade-offs.
+> **Prerequisite:** read the [Associate guide](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md) first. This guide does not re-teach individual service selection (S3 versus EBS, SQS versus SNS); it assumes it and builds on top.
 
-> Exam note: SAP-C02 requires **2+ years** AWS design experience. Questions are long vignettes with plausible distractors; the exam tests **sequencing, justification, and trade-offs**, not service identification alone.
+> Exam note: SAP-C02 expects **two or more years** of AWS design experience. Questions are long vignettes with plausible distractors, testing **sequencing, justification, and trade-offs** rather than service identification.
 
-> Currency note: reviewed against AWS changes through **mid-2026**. Notable additions since many study guides were written: **resource control policies (RCPs)** and **declarative policies** in Organizations, **Aurora DSQL** for multi-Region strongly consistent writes, **AWS Transform** for VMware/mainframe/.NET modernization, and the **Snow Family** restriction that changes bulk-migration answers. See [What Changed Recently](#what-changed-recently-professional-scope).
+> Currency note: reviewed against AWS changes through **mid-2026**. Notable additions since many study guides were written: **resource control policies (RCPs)** and **declarative policies** in Organizations, **Aurora DSQL** for multi-Region strongly consistent writes, **AWS Transform** for VMware, mainframe, and .NET modernization, and the **Snow Family** restriction that changes bulk-migration answers. See [What Changed Recently](#what-changed-recently-professional-scope).
 
 ---
 
 ## Content
 
+**[Part I — The Professional Mindset](#part-i--the-professional-mindset)**
+
 1. [How to Use This Guide](#how-to-use-this-guide)
    - [Reading the Abbreviations](#reading-the-abbreviations)
-2. [Exam at a Glance](#exam-at-a-glance)
-3. [What Changed Recently (Professional Scope)](#what-changed-recently-professional-scope)
-4. [Domain 1: Design Solutions for Organizational Complexity (26%)](#domain-1-design-solutions-for-organizational-complexity-26)
-   - [Task 1.1: Network Connectivity Strategies](#task-11-network-connectivity-strategies)
-   - [Task 1.2: Security Controls](#task-12-security-controls)
-   - [Task 1.3: Reliable and Resilient Architectures](#task-13-reliable-and-resilient-architectures)
-   - [Task 1.4: Multi-Account AWS Environment](#task-14-multi-account-aws-environment)
-   - [Task 1.5: Cost Optimization and Visibility](#task-15-cost-optimization-and-visibility)
-5. [Domain 2: Design for New Solutions (29%)](#domain-2-design-for-new-solutions-29)
-   - [Task 2.1: Deployment Strategy](#task-21-deployment-strategy)
-   - [Task 2.2: Business Continuity](#task-22-business-continuity)
-   - [Task 2.3: Security Controls for New Solutions](#task-23-security-controls-for-new-solutions)
-   - [Task 2.4: Reliability Strategy](#task-24-reliability-strategy)
-   - [Task 2.5: Performance Objectives](#task-25-performance-objectives)
-   - [Task 2.6: Cost Optimization Strategy](#task-26-cost-optimization-strategy)
-6. [Domain 3: Continuous Improvement for Existing Solutions (25%)](#domain-3-continuous-improvement-for-existing-solutions-25)
-   - [Task 3.1: Operational Excellence](#task-31-operational-excellence)
-   - [Task 3.2: Security Improvements](#task-32-security-improvements)
-   - [Task 3.3: Performance Improvements](#task-33-performance-improvements)
-   - [Task 3.4: Reliability Improvements](#task-34-reliability-improvements)
-   - [Task 3.5: Cost Optimization Opportunities](#task-35-cost-optimization-opportunities)
-7. [Domain 4: Accelerate Workload Migration and Modernization (20%)](#domain-4-accelerate-workload-migration-and-modernization-20)
-   - [Task 4.1: Migration Assessment and Wave Planning](#task-41-migration-assessment-and-wave-planning)
-   - [Task 4.2: Optimal Migration Approach](#task-42-optimal-migration-approach)
-   - [Task 4.3: New Architecture for Existing Workloads](#task-43-new-architecture-for-existing-workloads)
-   - [Task 4.4: Modernization and Enhancements](#task-44-modernization-and-enhancements)
-8. [For Engineers: Platform Automation at Org Scale](#for-engineers-platform-automation-at-org-scale)
-   - [Multi-Account Deployment Pipelines](#pa1-multi-account-deployment-pipelines)
-   - [Guardrails as Code](#pa2-guardrails-as-code)
-   - [Cross-Account Application Wiring](#pa3-cross-account-application-wiring)
-   - [Automated Remediation](#pa4-automated-remediation)
-   - [Cost Attribution Automation](#pa5-cost-attribution-automation)
-9. [Cross-Domain Scenario Q&A (30 Questions)](#cross-domain-scenario-qa-30-questions)
-10. [6-Week Professional Study Plan](#6-week-professional-study-plan)
-11. [References](#references)
-12. [Rapid Answers](#rapid-answers)
-13. [Self-Check Checklist](#self-check-checklist)
-14. [Glossary (Professional Terms)](#glossary-professional-terms)
+2. [What Changes at Organizational Scale](#what-changes-at-organizational-scale)
+
+**[Part II — The Multi-Account Organization](#part-ii--the-multi-account-organization)**
+
+3. [AWS Organizations and Account Structure](#aws-organizations-and-account-structure)
+4. [The Three Policy Types](#the-three-policy-types)
+5. [Control Tower and Landing Zones](#control-tower-and-landing-zones)
+6. [Identity at Organizational Scale](#identity-at-organizational-scale)
+7. [Cost Management and Attribution at Scale](#cost-management-and-attribution-at-scale)
+
+**[Part III — Networking at Scale](#part-iii--networking-at-scale)**
+
+8. [Hybrid and Multi-VPC Connectivity](#hybrid-and-multi-vpc-connectivity)
+9. [DNS in Hybrid Environments](#dns-in-hybrid-environments)
+10. [Centralized Inspection and Network Monitoring](#centralized-inspection-and-network-monitoring)
+
+**[Part IV — Security and Governance at Scale](#part-iv--security-and-governance-at-scale)**
+
+11. [Organization-Wide Security Services](#organization-wide-security-services)
+12. [Cross-Account Access Patterns](#cross-account-access-patterns)
+13. [Data Perimeter Controls](#data-perimeter-controls)
+
+**[Part V — Resilience at Organizational Scale](#part-v--resilience-at-organizational-scale)**
+
+14. [Disaster Recovery Across a Portfolio](#disaster-recovery-across-a-portfolio)
+15. [Backup Strategy at Scale](#backup-strategy-at-scale)
+
+**[Part VI — Designing and Improving Solutions at Scale](#part-vi--designing-and-improving-solutions-at-scale)**
+
+16. [Deployment and Release Strategy](#deployment-and-release-strategy)
+17. [Business Continuity for New Solutions](#business-continuity-for-new-solutions)
+18. [Security Controls for New Solutions](#security-controls-for-new-solutions)
+19. [Reliability Engineering at Scale](#reliability-engineering-at-scale)
+20. [Performance at Scale](#performance-at-scale)
+21. [Cost Strategy for New Solutions](#cost-strategy-for-new-solutions)
+22. [Operational Excellence at Scale](#operational-excellence-at-scale)
+23. [Improving Security in Existing Environments](#improving-security-in-existing-environments)
+24. [Improving Performance in Existing Environments](#improving-performance-in-existing-environments)
+25. [Improving Reliability in Existing Environments](#improving-reliability-in-existing-environments)
+26. [Finding Cost Optimization Opportunities](#finding-cost-optimization-opportunities)
+
+**[Part VII — Migration and Modernization](#part-vii--migration-and-modernization)**
+
+27. [Migration Assessment and Wave Planning](#migration-assessment-and-wave-planning)
+28. [Choosing a Migration Approach](#choosing-a-migration-approach)
+    - [The 6 R's](#the-6-rs)
+    - [Migration Tools](#migration-tools)
+29. [Re-architecting Existing Workloads](#re-architecting-existing-workloads)
+30. [Modernization and Enhancements](#modernization-and-enhancements)
+
+**[Part VIII — Platform Automation](#part-viii--platform-automation)**
+
+31. [For Engineers: Platform Automation at Org Scale](#for-engineers-platform-automation-at-org-scale)
+    - [Multi-Account Deployment Pipelines](#pa1-multi-account-deployment-pipelines)
+    - [Guardrails as Code](#pa2-guardrails-as-code)
+    - [Cross-Account Application Wiring](#pa3-cross-account-application-wiring)
+    - [Automated Remediation](#pa4-automated-remediation)
+    - [Cost Attribution Automation](#pa5-cost-attribution-automation)
+
+**[Part IX — Exam Preparation (SAP-C02)](#part-ix--exam-preparation-sap-c02)**
+
+32. [Exam at a Glance](#exam-at-a-glance)
+33. [Exam Domain Map](#exam-domain-map)
+34. [What Changed Recently (Professional Scope)](#what-changed-recently-professional-scope)
+35. [Cross-Domain Scenario Q&A (30 Questions)](#cross-domain-scenario-qa-30-questions)
+36. [6-Week Professional Study Plan](#6-week-professional-study-plan)
+37. [Rapid Answers](#rapid-answers)
+38. [Self-Check Checklist](#self-check-checklist)
+
+**[Part X — Reference](#part-x--reference)**
+
+39. [References](#references)
+40. [Glossary (Professional Terms)](#glossary-professional-terms)
 
 ---
+
+# Part I — The Professional Mindset
 
 ## How to Use This Guide
 
 [↑ Content](#content)
 
-**Professional exam mindset:** Every question has at least two technically valid answers. The correct one satisfies **all** constraints in the vignette — regulatory, timeline, team skill, existing investment, and blast radius.
+This guide is written as a course in operating AWS at organizational scale, with the exam treated as an outcome rather than the subject. The order is deliberate: Part II first, because the multi-account organization is the foundation everything else assumes, then networking, security, resilience, design and improvement, migration, and platform automation.
 
-Answer long scenarios in this order:
+| Part | Contents | Read it when |
+|------|----------|--------------|
+| **I — The Professional Mindset** | What actually changes between one account and two hundred | First. It explains why the rest of the guide is organized as it is |
+| **II — The Multi-Account Organization** | Organizations, the three policy types, Control Tower and landing zones, identity at scale, cost attribution | Immediately after. Nothing later makes sense without it |
+| **III — Networking at Scale** | Transit Gateway, Direct Connect, hybrid DNS, centralized inspection | When the question involves more than two VPCs or a data center |
+| **IV — Security and Governance at Scale** | Organization-wide detection, cross-account access, data perimeters | Alongside Part II — governance and security are the same project |
+| **V — Resilience at Organizational Scale** | DR across a portfolio, backup strategy, ransomware resilience | When RTO and RPO differ per workload, which at scale is always |
+| **VI — Designing and Improving Solutions** | Deployment, continuity, reliability, performance, cost — for both new and existing workloads | The bulk of day-to-day architecture work |
+| **VII — Migration and Modernization** | Assessment, wave planning, the 6 R's, tooling, modernization ladders | When workloads are arriving from somewhere else |
+| **VIII — Platform Automation** | Working code: multi-account pipelines, guardrails as code, remediation, cost attribution | If you build the platform rather than consume it |
+| **IX — Exam Preparation** | Format, domain map, recent changes, 30 scenarios, study plan | When you have a test date |
+| **X — Reference** | Documentation links and the Professional glossary | Continuously |
 
-1. **Recommended approach** — what to do first and what architecture results.
+**How to answer a long scenario**, whether in an exam or a design review. The five-step shape used throughout the Q&A section:
+
+1. **Recommended approach** — what to do first, and what architecture results.
 2. **Sequencing** — phased rollout, migration waves, or parallel tracks.
-3. **Trade-off matrix** — cost / complexity / risk / time-to-value for key decisions.
-4. **Why distractors fail** — which unstated assumption each wrong answer makes.
-5. **Deeper understanding** — operational and organizational consequences.
+3. **Trade-off matrix** — cost, complexity, risk, and time-to-value for the key decisions.
+4. **Why the alternatives fail** — which unstated assumption each one makes.
+5. **Deeper understanding** — the operational and organizational consequences that follow.
 
-Cross-reference [SAA-C03](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md) for service fundamentals. Use this guide when the question involves **40 accounts**, **Direct Connect + 20 VPCs**, **Oracle migration with 15-minute RPO**, or **retrofit GuardDuty org-wide**.
+Use this guide when the situation involves **40 accounts**, **Direct Connect plus 20 VPCs**, **an Oracle migration with a 15-minute RPO**, or **retrofitting GuardDuty organization-wide**. For anything that is fundamentally a single-service question, the [Associate guide](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md) teaches it in more depth.
 
 ### Reading the Abbreviations
 
 Professional vignettes are written in dense shorthand, so each abbreviation here is expanded the first time it appears in a section. Two glossaries back this up: the [Professional glossary](#glossary-professional-terms) at the end of this file for organization- and migration-scale terms, and the [Associate guide's complete glossary](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md#glossary-and-abbreviations) for shared AWS and general-computing vocabulary.
 
-Three abbreviation clusters cause the most confusion at this level, and they are worth fixing in mind before Domain 1:
+Three abbreviation clusters cause the most confusion at this level, and they are worth settling before Part II:
 
 | Cluster | The distinction |
 |---------|-----------------|
@@ -85,82 +137,201 @@ Three abbreviation clusters cause the most confusion at this level, and they are
 
 ---
 
-## Exam at a Glance
+## What Changes at Organizational Scale
 
 [↑ Content](#content)
 
-| Fact | Value |
-|------|-------|
-| Exam code | SAP-C02 |
-| Format | 75 questions (65 scored + 10 unscored), 180 minutes |
-| Passing score | 750 / 1000 |
-| Prerequisite experience | 2+ years designing AWS solutions |
-| Companion cert | SAA-C03 (recommended, not required) |
+The Associate level asks *which service*. Professional-level architecture asks *which sequence, which scope, and what do we defer* — and it does so because at organizational scale a set of new constraints appears that simply do not exist for a single workload in a single account. Understanding those constraints is the real content of this level; the services are mostly the same ones.
 
-**Domain weights:**
+**Six shifts define the difference.**
 
-| Domain | Weight |
-|--------|--------|
-| Design Solutions for Organizational Complexity | 26% |
-| Design for New Solutions | 29% |
-| Continuous Improvement for Existing Solutions | 25% |
-| Accelerate Workload Migration and Modernization | 20% |
+**1. The unit of design becomes the account, not the resource.** With one account you design VPCs and instances. With two hundred accounts you design the *organization*: which accounts exist, what each is for, which policies attach to which OU, how a new account is created and baselined. Individual resources become an implementation detail of a platform.
 
-**Professional vs Associate:** Associate asks "which service?" Professional asks "which sequence, which scope, and what do we defer?"
+**2. Every control must work by default, for resources that do not exist yet.** A bucket policy secures one bucket. A team of 40 engineers creating buckets weekly needs something that secures buckets nobody has created — which is why RCPs, declarative policies, and Config rules with automatic remediation matter more than any individual configuration. The question shifts from "is this resource secure" to "can an insecure resource be created at all."
+
+**3. Networking becomes an address-space and routing problem.** One VPC needs a CIDR. Sixty VPCs plus three data centers plus two acquisitions need an *IP address plan*, because overlapping ranges cannot be routed together at any price. The most expensive networking mistakes at this level were made years earlier by someone who picked `10.0.0.0/16` twice.
+
+**4. Requirements stop being uniform.** A single workload has one RTO. A portfolio has a hundred workloads whose RTOs range from five minutes to a week, and applying one standard to all of them guarantees you are both over-spending on the tail and under-protecting the crown jewels. Tiering — and defending the tiers — becomes the architect's job.
+
+**5. Sequencing becomes as important as the target design.** Nobody migrates 200 applications at once or retrofits guardrails onto 40 accounts in a weekend. The valuable skill is ordering the work so that each step is independently safe, reversible, and delivers something: land the guardrails before the workloads, the network before the migration waves, the logging before the incident. A perfect end-state design with no credible path to it is worth nothing.
+
+**6. Organizational constraints are real constraints.** Team skill, existing licensing, vendor contracts, audit cycles, and the political cost of a migration are inputs to the design, not excuses. This is why Professional vignettes mention them: an answer that is technically superior but requires a Kubernetes platform team that does not exist is the wrong answer.
+
+**What this means for how you read a scenario.** Long vignettes are long because they contain constraints, and usually every sentence contributes one. Before evaluating options, extract: how many accounts and Regions, what the regulatory requirement is, what already exists that cannot be discarded, what the timeline is, what the team can actually operate, and what the blast radius of the change is. The correct answer satisfies all of them; each distractor violates exactly one, and usually the one mentioned only in passing.
 
 ---
 
-## What Changed Recently (Professional Scope)
+# Part II — The Multi-Account Organization
 
-[↑ Content](#content)
-
-The Professional exam is more exposed to service change than the Associate exam, because governance and migration tooling has moved quickly. These are the changes that alter a *correct answer*, not just add an option.
-
-### Governance: two new policy types
-
-Older material presents SCPs as the only org-level guardrail. There are now three, and picking the right one is a Professional-level distinction:
-
-| Policy type | Applies to | Use when |
-|-------------|-----------|----------|
-| **SCP** (Service Control Policy) | **Principals** in member accounts | Limit what identities in an account may do — "no EC2 outside approved instance types" |
-| **RCP** (Resource Control Policy) | **Resources** in member accounts | Build a data perimeter — "no principal outside this organization may read our S3 buckets," enforced regardless of who wrote the bucket policy |
-| **Declarative policy** | **Service configuration** | Enforce a baseline setting that stays enforced as AWS adds APIs — "VPCs may not have internet gateways," "AMIs may not be shared publicly" |
-
-Key RCP properties for exam reasoning: RCPs never grant permissions, do not apply to the management account or service-linked roles, require all-features Organizations, and currently cover a subset of services (S3, SQS, KMS, Secrets Manager, STS among them). The classic question they answer is "how do I guarantee no bucket in 200 accounts can be shared externally, without auditing 200 bucket policies."
-
-Declarative policies matter because they survive service evolution: an SCP denying specific API actions can be bypassed by a new API, while a declarative policy expresses the desired *configuration* and AWS keeps enforcing it.
-
-### Data layer: multi-Region writes became possible
-
-**Aurora DSQL** (GA May 2025) provides active-active multi-Region writes with strong consistency. This genuinely changes the honest answer to "global application with strongly consistent writes," which previously forced you into a single write Region or application-level conflict resolution. The cost is a reduced PostgreSQL surface (no foreign keys, limited extensions), so it is a greenfield choice, not a migration target for an existing schema.
-
-### Migration tooling: the offline path changed, and modernization got agents
-
-| Change | Effect on answers |
-|--------|-------------------|
-| **Snowmobile retired** (2024), **Snowcone discontinued** (2024), **Snowball Edge existing-customers-only** (Nov 2025) | For new projects, bulk transfer means **DataSync**, **AWS Data Transfer Terminal** (physical drop-off at an AWS location), or partner solutions; **Outposts** for edge compute |
-| **AWS Transform** | Agentic migration/modernization for **VMware**, **mainframe**, and **Windows/.NET** workloads. The .NET agent modernizes Windows-based .NET applications to Linux and targets substantial Windows licensing savings; assessment and the VMware/mainframe/Windows agents are currently free |
-| **Migration Hub / Application Discovery** | Still the tracking and inventory layer; AWS Transform sits above them for assessment and code transformation |
-
-**Why AWS Transform matters for a .NET shop specifically:** the classic "rehost the Windows fleet and keep paying Windows licensing" answer now has a credible middle path — port .NET Framework applications to modern .NET on Linux, then run on Graviton containers. That converts a licensing cost line into a one-off engineering project, which is exactly the trade-off a Professional-level question wants you to articulate.
-
-### Cost and operations
-
-- **Cost Optimization Hub** consolidates and deduplicates recommendations across accounts — increasingly the right answer where older material says "Trusted Advisor."
-- **Database Savings Plans** (Dec 2025) extend commitment-based discounts to database services including DynamoDB.
-- **AWS Backup logically air-gapped vaults** and **Vault Lock** are the current answers for ransomware-resilient, shareable backup copies.
+Everything at this level rests on the multi-account environment: how accounts are structured, what policies constrain them, how they are created, who signs into them, and how their cost is attributed. This part covers that foundation in depth.
 
 ---
 
-## Domain 1: Design Solutions for Organizational Complexity (26%)
-
-### Task 1.1: Network Connectivity Strategies
+## AWS Organizations and Account Structure
 
 [↑ Content](#content)
 
-#### Hybrid and Multi-VPC Connectivity
+**What it is.** AWS Organizations binds many accounts into one entity with central policy and consolidated billing. It is not optional at scale — it is the substrate that makes everything else in this guide possible.
 
-**Vocabulary for this task area:** **VPC** = Virtual Private Cloud (your isolated network), **CIDR** = Classless Inter-Domain Routing (IP range notation such as `10.0.0.0/16`), **DX** = Direct Connect (a dedicated physical circuit), **TGW** = Transit Gateway, **on-prem** = on-premises, meaning your own data center.
+**The components, precisely.**
+
+| Component | What it is |
+|-----------|-----------|
+| **Management account** (formerly master, sometimes payer) | Owns the organization. Creates and invites accounts, attaches policies, receives the consolidated bill. **Cannot be restricted by SCPs or RCPs**, which is why it must run no workloads |
+| **Member account** | Every other account. Isolated by default, constrained by inherited policies |
+| **Root** | The top of the OU hierarchy — not the root *user*, which is a different thing entirely. Confusing the two is common |
+| **OU** (Organizational Unit) | A container of accounts and nested OUs. Policies attach here and are **inherited downward**, which is what makes hierarchy design consequential |
+| **All features versus consolidated billing only** | All features is required for SCPs, RCPs, declarative policies, and integrated services. Consolidated-billing-only organizations are legacy and should be migrated |
+| **Service-linked / trusted access** | The mechanism by which GuardDuty, Config, CloudTrail, Backup, and others operate organization-wide, usually through a **delegated administrator** account |
+
+**The reference account structure**, which most mature organizations converge on:
+
+| OU / Account | Purpose |
+|--------------|---------|
+| **Management** | Organizations, policies, billing. **No workloads** — it cannot be constrained by SCPs, so anything in it is effectively unguarded |
+| **Security** | Log archive, GuardDuty and Security Hub administration, forensics. Logs are write-once and workload teams have no delete rights |
+| **Infrastructure** | Shared networking (Transit Gateway, Route 53 Resolver, IPAM), shared services, and CI/CD tooling |
+| **Workloads** | Dev / Test / Prod accounts, one set per product line or business unit. The account, not a tag, is the environment boundary |
+| **Sandbox** | Experimentation, with restrictive SCPs and a hard budget action |
+| **Suspended** | An OU with a deny-all SCP, where accounts go before closure |
+
+**Why so many accounts rather than one large one.** The account is AWS's strongest isolation boundary, and it separates three things simultaneously: IAM (a compromised dev credential cannot reach production), service quotas (a runaway test job cannot exhaust production's Lambda concurrency or API rate limits), and billing (cost attribution needs no tagging discipline at all). It also creates a natural blast-radius boundary for both incidents and mistakes.
+
+The cost is that everything cross-account requires deliberate plumbing — networking, deployment pipelines, log aggregation, DNS, and access. That plumbing is precisely what a platform team exists to build, and it is what the Professional exam tests.
+
+**Designing the OU hierarchy** has one governing principle: **group accounts by the policies they should share, not by the org chart.** A hierarchy mirroring the company's departments looks tidy and produces policy chaos when departments reorganize. A hierarchy organized by environment and sensitivity (`Workloads/Prod`, `Workloads/NonProd`, `Sandbox`) stays stable because those categories genuinely differ in what they should be allowed to do.
+
+**Specifics worth knowing.** The default account quota is 10 (raisable, and raised freely on request). Policies are inherited and *cumulative* — an SCP at the root and another at the OU both apply, and the effect is the intersection. Moving an account between OUs changes its effective permissions immediately, which is a useful lever and a dangerous one. Closing an account is possible from the management account, and the account remains in a suspended state for 90 days.
+
+---
+
+## The Three Policy Types
+
+[↑ Content](#content)
+
+Older material presents SCPs as the only organization-level guardrail. There are now three, and choosing correctly among them is a defining Professional-level skill.
+
+| Policy type | Constrains | Answers the question |
+|-------------|-----------|----------------------|
+| **SCP** (Service Control Policy) | **Principals** in member accounts | "What may identities in this account do?" |
+| **RCP** (Resource Control Policy) | **Resources** in member accounts | "What may be done *to* our resources, by anyone, including principals outside the organization?" |
+| **Declarative policy** | **Service configuration** | "What configuration must remain true, regardless of which API someone uses?" |
+
+**Service Control Policies in depth.** An SCP is a *filter*, not a grant. It defines the maximum permissions available to principals in an account; the account's own IAM policies must still grant anything to actually happen. Effective permissions are the intersection of the SCP and IAM.
+
+The practical properties that questions turn on:
+
+- **SCPs cannot grant.** An SCP allowing `s3:*` grants nothing.
+- **SCPs do not apply to the management account.** This is the single most important SCP fact, and the reason the management account must be empty.
+- **SCPs do not apply to service-linked roles**, so AWS services can continue functioning.
+- **Deny lists are the practical pattern.** Start from `FullAWSAccess` and add explicit denies. Allow lists are technically possible and operationally miserable, because every new service requires a policy change.
+- **Common denies:** Regions outside an allowlist (using `aws:RequestedRegion`), root user actions, disabling CloudTrail or GuardDuty, deleting log buckets, creating IAM users, and resources without required tags (using `aws:RequestTag`).
+
+**Resource Control Policies in depth.** An RCP applies to resources in scope, regardless of who wrote the resource policy. The properties that matter:
+
+- RCPs **never grant** permissions, like SCPs.
+- They do **not** apply to the management account or to service-linked roles.
+- They require an all-features organization.
+- They cover a **subset of services** — S3, SQS, KMS, Secrets Manager, and STS among them — so they are not yet a universal perimeter.
+
+**Why RCPs changed the game:** before them, a data perimeter on resources depended on every bucket, queue, and key carrying the correct resource policy, and one missed resource was a hole that no audit reliably found. An RCP applies centrally, so resources created tomorrow inherit the perimeter. The classic question it answers is "guarantee that no bucket in 200 accounts can be read from outside the organization, without auditing 200 bucket policies."
+
+**Declarative policies in depth.** These express a desired *configuration* rather than a list of forbidden API actions — "VPCs may not have internet gateways," "AMIs may not be shared publicly," "EBS volumes must be encrypted." The distinction is subtle and important: an SCP denying specific API actions can be bypassed by a new API that AWS ships next quarter and your deny list has never heard of. A declarative policy states the outcome, and AWS keeps enforcing it across API changes.
+
+**Choosing among the three.**
+
+| Requirement | Right tool |
+|-------------|-----------|
+| "Nobody in dev may create resources outside eu-central-1" | **SCP** — it limits principals |
+| "No external principal may read any bucket we own" | **RCP** — it limits resources |
+| "No VPC may have an internet gateway, permanently" | **Declarative policy** — it enforces configuration |
+| "This team may deploy only these services" | **SCP** on their OU |
+| "Snapshots and AMIs must never be public" | **Declarative policy** |
+| "Everything must be tagged with a cost center at creation" | **SCP** with an `aws:RequestTag` condition, audited by Config |
+
+**The common design error** is reaching for SCPs for everything. SCPs are blind to access that does not originate from your organization's principals, so an externally shared bucket is a resource-side problem needing an RCP. And any control expressible as a configuration is better as a declarative policy, because it keeps holding when the API surface changes. A fourth consideration: **permission boundaries** live inside the account and are the right tool for delegating IAM administration safely — SCPs cannot express "developers may create roles, but only ones weaker than this."
+
+**A note on rollout, because this is where real projects fail.** Deploying a restrictive SCP to a live production OU breaks things you did not predict — a forgotten automation, a vendor integration, a service-linked behavior. The safe sequence is: write the policy, apply it to a sandbox OU, use CloudTrail to find calls that *would* have been denied, then expand OU by OU. Policy rollout is a migration, not a configuration change.
+
+---
+
+## Control Tower and Landing Zones
+
+[↑ Content](#content)
+
+**What a landing zone is.** A pre-built, opinionated multi-account environment: the account structure, centralized logging, baseline guardrails, an identity setup, and a repeatable way to create new accounts. You either build one or buy AWS's implementation of one.
+
+**AWS Control Tower** is that implementation. It creates the Log Archive and Audit accounts, sets up CloudTrail organization trails and Config aggregation, applies a set of **controls** (formerly guardrails) classified as *preventive* (implemented as SCPs), *detective* (implemented as Config rules), and *proactive* (implemented as CloudFormation Hooks that block non-compliant resources before creation), and provides **Account Factory** for vending new accounts with a baseline already applied.
+
+| Approach | When it fits |
+|----------|--------------|
+| **Control Tower** | A greenfield or early-stage organization that wants a compliant baseline quickly, and whose requirements fit AWS's opinions |
+| **Organizations plus custom IaC** | An existing large organization, a mature platform team, or requirements Control Tower's opinions do not accommodate |
+
+**The honest trade-off:** Control Tower reaches a compliant baseline far faster and is harder to customize afterwards; a hand-built landing zone is the reverse. Both are legitimate, and the deciding factor is usually whether you have a platform team that will own the alternative for years.
+
+**The scenario that appears repeatedly:** an existing 40-account organization wants Control Tower. The answer is that Control Tower can *enroll* existing accounts — but only after each account's configuration is reconciled with the landing zone's expectations (Config recorder state, required roles, no conflicting SCPs, CloudTrail arrangement). The enrollment is the easy part; the reconciliation is the project, and it is done in waves starting with the least critical accounts.
+
+**Account Factory for Terraform (AFT)** is worth knowing by name: it drives account vending through a Terraform pipeline, so account creation and its baseline customizations are code and reviewable. **Customizations for Control Tower (CfCT)** is the CloudFormation-based equivalent.
+
+---
+
+## Identity at Organizational Scale
+
+[↑ Content](#content)
+
+**The model.** With many accounts, per-account IAM users are unmanageable and unauditable. **IAM Identity Center** replaces them: identities live in one place (an external IdP or Identity Center's own directory), and access is granted as a three-way assignment — *which group*, gets *which permission set*, in *which accounts*.
+
+**How permission sets actually work**, since this is the mechanism: a permission set is a template containing managed policies, an inline policy, an optional permissions boundary, and a session duration. When you assign it to an account, Identity Center provisions a corresponding IAM role in that account and keeps it in sync. Changing the permission set updates every account it is assigned to — which is what makes "revoke this access everywhere" a single operation rather than a project.
+
+**Design guidance that matters at scale:**
+
+- **Assign to groups, never to individuals.** Joiner-mover-leaver processes should touch the IdP only.
+- **Keep permission sets few and coarse** (`ReadOnly`, `Developer`, `DataEngineer`, `Break-Glass`). A permission set per person is per-account IAM with extra steps.
+- **Use attribute-based access control** where possible: pass IdP attributes as session tags and write policies referencing `aws:PrincipalTag`, so one permission set serves many teams.
+- **Session duration is a real security control.** Long sessions are convenient and extend the window a stolen session is useful.
+- **Plan break-glass access.** Identity Center is a Region-pinned service, and your recovery plan must survive its unavailability or a misconfigured IdP. Keep a small number of heavily protected, hardware-MFA, monitored root or IAM credentials, and alarm on their use.
+
+**Workload identity across accounts** is the other half. Prefer role assumption with narrowly scoped trust policies over any form of shared credential, use **RAM** (Resource Access Manager) to share resources rather than duplicating them, and remember that cross-account access to an encrypted resource requires the KMS key policy to agree as well as the resource and identity policies.
+
+**Active Directory integration** is a recurring vignette. The options are: federate Identity Center to AD (through AD Connector or a two-way trust) for human console access, and use **AWS Managed Microsoft AD** for workloads that need genuine domain join — Windows instances, FSx for Windows, RDS SQL Server Windows authentication. "Users must keep their existing corporate credentials" points to federation, not to a new directory.
+
+---
+
+## Cost Management and Attribution at Scale
+
+[↑ Content](#content)
+
+**What changes with many accounts.** Cost stops being a number and becomes an *attribution problem*: engineering teams cannot optimize what they cannot see, and finance cannot forecast what it cannot attribute. The tooling therefore splits into visibility, attribution, and control.
+
+| Tool | Purpose |
+|------|---------|
+| **Cost Explorer** | Trends, forecasts, and **RI/SP** (Reserved Instance / Savings Plan) purchase recommendations across the organization |
+| **CUR** (Cost and Usage Report) | Raw hourly line-item data in S3, queried with Athena or Amazon Quick. The only complete source for detailed chargeback |
+| **AWS Budgets** | Alerts and **budget actions** — apply a restrictive policy or stop resources when a threshold is crossed |
+| **Cost Anomaly Detection** | Machine-learning detection of unusual spend per account or service |
+| **Cost Optimization Hub** | Consolidated, deduplicated recommendations across accounts — increasingly the right answer where older material says Trusted Advisor |
+| **Compute Optimizer** | Right-sizing for EC2, EBS, Lambda, and **ASGs** (Auto Scaling Groups) from observed utilization |
+| **S3 Storage Lens** | Organization-wide storage usage and optimization metrics |
+| **Pricing Calculator** | Cost estimates *before* deployment, for comparing candidate architectures |
+
+**Commitment management is a central-team responsibility.** Because Savings Plans and RIs are shared across the organization by default, buying them per team produces both over-commitment and unused coverage. The workable model is that a central team owns commitment purchasing against aggregate baseline usage, and the discount is redistributed to accounts through the chargeback model. Note that **Database Savings Plans** (December 2025) extended this to database services including DynamoDB.
+
+**Tagging, and the step everyone forgets.** Mandatory tags such as `CostCenter`, `Environment`, and `Owner`, enforced at creation by an SCP using the `aws:RequestTag` condition and audited afterwards by AWS Config rules. But a tag does nothing for cost reporting until it is **activated as a cost allocation tag** in the billing console — and activation is not retroactive. Untagged historical spend stays unattributable forever, which is why this is a day-one task rather than a first-budget-crisis task.
+
+**Chargeback versus showback**, since the terms appear in vignettes: *showback* reports each team's spend without moving money, and is the right starting point because it creates awareness without triggering political defensiveness. *Chargeback* actually allocates the cost to the team's budget, which drives behavior harder and requires attribution accurate enough to survive a dispute. Attempting chargeback before attribution is trustworthy is a reliable way to destroy confidence in the whole programme.
+
+---
+
+# Part III — Networking at Scale
+
+---
+
+## Hybrid and Multi-VPC Connectivity
+
+[↑ Content](#content)
+
+**Vocabulary for this part:** **VPC** = Virtual Private Cloud (an isolated network), **CIDR** = Classless Inter-Domain Routing (IP range notation such as `10.0.0.0/16`), **DX** = Direct Connect (a dedicated physical circuit), **TGW** = Transit Gateway, **on-prem** = on-premises, meaning your own data center.
 
 | Pattern | When | Limitation |
 |---------|------|------------|
@@ -170,9 +341,29 @@ Declarative policies matter because they survive service evolution: an SCP denyi
 | **Site-to-Site VPN** | Backup path, or lower-bandwidth hybrid | Depends on the public internet; roughly 1.25 Gbps per tunnel |
 | **PrivateLink** | Exposing or consuming one service privately, SaaS-style | Per-service endpoints; it is not a full network extension |
 
-**The CIDR overlap problem deserves emphasis** because it is the most common reason a merger or acquisition integration fails: two networks that both use `10.0.0.0/16` cannot be peered or routed together at all, since routers cannot tell which side an address belongs to. The fixes are all expensive — re-address one network, or place NAT/PrivateLink in between so only translated addresses are exposed. This is why IP address planning (**IPAM** — IP Address Management, which AWS offers as a service) is a Professional-level concern rather than a detail.
+**The CIDR overlap problem deserves emphasis** because it is the most common reason a merger or acquisition integration fails: two networks that both use `10.0.0.0/16` cannot be peered or routed together at all, since routers cannot tell which side an address belongs to. The fixes are all expensive — re-address one network, or place NAT or PrivateLink in between so only translated addresses are exposed. This is why IP address planning (**IPAM** — IP Address Management, which AWS offers as a service) is a Professional-level concern rather than a detail.
 
-#### DNS in Hybrid Environments
+**Transit Gateway in depth**, since it is the backbone of most large AWS networks. A TGW is a Regional router. VPCs, VPN connections, Direct Connect gateways, and other TGWs attach to it, and **TGW route tables** decide which attachments can reach which. That last point is the design lever people miss: a TGW is not automatically a flat network. By giving Production and Development their own route tables, and a shared-services route table reachable from both, you get segmentation without separate infrastructure — the standard way to satisfy "dev must never reach prod" while still sharing DNS and monitoring.
+
+The specifics that shape designs:
+
+| Item | Detail |
+|------|--------|
+| Scope | Regional; **peer TGWs** across Regions for a global network |
+| Bandwidth | Up to 50 Gbps per VPC attachment, with equal-cost multipath across attachments |
+| Cost | Per attachment-hour **plus per GB processed** — which is why very chatty inter-VPC traffic sometimes justifies direct peering alongside a TGW |
+| Sharing | Shared to other accounts with **RAM**, so spoke accounts attach their own VPCs to a central TGW they do not own |
+| Multicast and appliance mode | Supported; **appliance mode** keeps a flow pinned to the same appliance AZ, which stateful inspection requires |
+
+**Direct Connect in depth**, because the exam tests its resilience model. A **connection** is the physical port (1, 10, or 100 Gbps dedicated, or a hosted connection from a partner). On top of it you create **virtual interfaces**: a *private* VIF reaches one VPC, a *transit* VIF reaches a Direct Connect gateway and thence a TGW, and a *public* VIF reaches AWS public services. A **Direct Connect gateway** is global, which lets one circuit reach VPCs in multiple Regions.
+
+Resilience is the part that matters: a single connection at a single location is a single point of failure, and AWS's resilience models are explicit — *development and test* (one connection), *high resilience* (two connections at two locations), and *maximum resilience* (two connections at each of two locations, on separate devices). Add a Site-to-Site VPN as a lower-bandwidth backup regardless, since it provisions in minutes. And remember that **Direct Connect is private but not encrypted**; a requirement for encryption in transit means running a VPN over the DX or using MACsec on supported ports.
+
+**MTU and BGP details** appear occasionally: DX supports 9,001-byte jumbo frames on private and transit VIFs while VPN does not, and routing preference is controlled with BGP attributes — **AS path** and **local preference** on your side, longest-prefix match first. When a vignette says "traffic must prefer Direct Connect and fail over to VPN," the mechanism is BGP path selection, not a manual switch.
+
+---
+
+## DNS in Hybrid Environments
 
 **DNS** (Domain Name System) resolves names to IP addresses. In a hybrid environment, names must resolve correctly in both directions — AWS workloads need to find on-premises servers and vice versa.
 
@@ -181,12 +372,33 @@ Declarative policies matter because they survive service evolution: an SCP denyi
 | **Route 53 Resolver** | The DNS resolver inside every VPC; **inbound endpoints** let on-premises systems query AWS names, **outbound endpoints** let AWS query on-premises names |
 | **Resolver rules** | Conditional forwarding — send queries for `corp.example.com` to the on-premises DNS servers |
 | **Split-horizon DNS** | The same hostname deliberately resolving to a private address internally and a public one externally |
+| **Private hosted zones** | Route 53 zones resolvable only from associated VPCs — the standard way to name internal services |
+| **Resolver DNS Firewall** | Blocks or monitors queries for specified domains, which is how you stop **DNS exfiltration** and malware command-and-control |
 
-#### Network Monitoring
+**The pattern to internalize** for bidirectional hybrid resolution: create a **shared services VPC** in the Infrastructure account holding the Resolver endpoints, share it or associate private hosted zones across the organization, and point on-premises DNS servers at the inbound endpoint while forwarding rules send corporate domains to the outbound endpoint. Doing this per-VPC instead of centrally is the mistake that produces sixty sets of forwarding rules and one very bad afternoon.
 
-- **VPC Flow Logs** — metadata for accepted and rejected traffic (source, destination, port, bytes). Metadata only, not packet contents — enough to answer "did this connection happen?" but not "what was sent?"
-- **Traffic Mirroring** — copies actual packets to an inspection appliance, for **IDS** (Intrusion Detection System) or forensic analysis
-- **Network Firewall** — centralized, stateful inspection between network segments, typically deployed in an inspection VPC that all traffic transits
+**Route 53 Profiles** are worth knowing as the newer answer to that sprawl: they bundle private hosted zone associations, resolver rules, and DNS Firewall rules into a profile applied to many VPCs at once.
+
+---
+
+## Centralized Inspection and Network Monitoring
+
+[↑ Content](#content)
+
+| Tool | What it gives you |
+|------|-------------------|
+| **VPC Flow Logs** | Metadata for accepted and rejected traffic — source, destination, port, bytes. Metadata only, not contents: enough to answer "did this connection happen?" but not "what was sent?" |
+| **Traffic Mirroring** | Copies actual packets to an inspection appliance, for **IDS** (Intrusion Detection System) or forensic capture |
+| **AWS Network Firewall** | Managed stateful inspection, domain filtering, and Suricata-compatible rules |
+| **Gateway Load Balancer** | Inserts third-party appliances transparently into the traffic path, preserving source and destination |
+| **Firewall Manager** | Applies AWS WAF, Shield Advanced, Network Firewall, and security-group policies consistently across every account |
+| **Reachability Analyzer / Network Access Analyzer** | Answers "can A reach B, and why not" from configuration, without sending a packet — and finds unintended paths to the internet |
+
+**The centralized inspection pattern**, which is the standard regulated-industry design: all spoke VPCs attach to a Transit Gateway, TGW route tables send inter-VPC and egress traffic to an **inspection VPC**, and that VPC contains Network Firewall or a third-party appliance behind a Gateway Load Balancer. Every packet crossing a boundary is inspected in one place, so the control is uniform and the evidence is centralized.
+
+Two details make or break it. **Appliance mode** must be enabled on the inspection VPC's TGW attachment, otherwise return traffic can arrive at a different AZ's appliance and stateful inspection breaks. And centralized egress through a shared NAT gateway saves money on gateway-hours but concentrates data-processing charges and creates a bandwidth chokepoint — worth measuring rather than assuming.
+
+**A cost note that comes up in real reviews:** centralizing everything through a TGW means every cross-VPC byte is billed twice (in and out) plus TGW processing. For two VPCs exchanging very high volume continuously, a direct peering connection alongside the TGW is both faster and cheaper. Architectural purity is not free.
 
 ```mermaid
 flowchart TB
@@ -208,11 +420,13 @@ flowchart TB
 
 ---
 
-### Task 1.2: Security Controls
+# Part IV — Security and Governance at Scale
+
+---
+
+## Organization-Wide Security Services
 
 [↑ Content](#content)
-
-#### Organization-Wide Security
 
 | Service | Scope |
 |---------|-------|
@@ -225,13 +439,26 @@ flowchart TB
 
 **The two-word idea behind all six:** *centralize evidence, delegate administration*. Logs and findings land in an account that workload teams cannot write to (so evidence cannot be tampered with), while day-to-day operation happens in a security account rather than the management account (which should hold no workloads and be used as rarely as possible).
 
-#### Cross-Account Access Patterns
+**How to actually roll this out**, because "enable GuardDuty organization-wide" is a sentence that hides a project. The order that works: designate the Security account as **delegated administrator** for each service; enable *auto-enrollment* so new accounts are covered without anyone remembering; aggregate findings into Security Hub in that same account; then tune. Tuning is not optional — an untuned Security Hub in a large organization produces thousands of findings, the team stops reading them, and you have bought a compliance artifact rather than a security control.
 
-- **Delegated administrator** — security services are operated from an account in the Security **OU** (Organizational Unit) rather than from the management account
-- **Cross-account roles** — `sts:AssumeRole` with an **external ID** for third parties. The external ID is a shared secret the partner must supply, defeating the *confused deputy* attack in which another of that partner's customers persuades them to act against your account
-- **RAM** (Resource Access Manager) — shares actual resources (subnets, Transit Gateway attachments, License Manager configurations) with other accounts, instead of duplicating them per account
+---
 
-#### Data Perimeter Controls
+## Cross-Account Access Patterns
+
+[↑ Content](#content)
+
+- **Delegated administrator** — security services are operated from an account in the Security **OU** (Organizational Unit) rather than from the management account, which should stay empty and rarely used.
+- **Cross-account roles** — `sts:AssumeRole` with narrowly scoped trust policies. For third parties, add an **external ID**: a shared secret the partner must supply, defeating the *confused deputy* attack in which another of that partner's customers persuades them to act against your account.
+- **RAM** (Resource Access Manager) — shares actual resources (subnets, Transit Gateway attachments, Route 53 Resolver rules, License Manager configurations) with other accounts instead of duplicating them. This is what makes a shared-VPC or shared-TGW topology possible.
+- **Resource policies plus KMS key policies** — cross-account access to an encrypted resource requires *three* alignments: the caller's identity policy, the resource policy, and the KMS key policy. Teams routinely fix the first two and spend an afternoon on the third.
+
+**Shared VPC versus per-account VPC** is a recurring design question. Sharing subnets through RAM centralizes network administration and conserves address space, at the cost of coupling accounts to a network they do not control and complicating security-group ownership. Per-account VPCs attached to a TGW give teams autonomy and cost more addresses and attachments. Neither is wrong; the deciding factor is whether the network team wants to be in the path of every application change.
+
+---
+
+## Data Perimeter Controls
+
+[↑ Content](#content)
 
 A data perimeter answers "only my identities, from my networks, to my resources." It is built from four condition-key families, applied through SCPs, RCPs, and resource policies together:
 
@@ -246,11 +473,13 @@ A data perimeter answers "only my identities, from my networks, to my resources.
 
 ---
 
-### Task 1.3: Reliable and Resilient Architectures
+# Part V — Resilience at Organizational Scale
+
+---
+
+## Disaster Recovery Across a Portfolio
 
 [↑ Content](#content)
-
-#### Advanced DR (Org Scale)
 
 **RTO** (Recovery Time Objective) is the maximum acceptable *downtime*; **RPO** (Recovery Point Objective) is the maximum acceptable *data loss*, expressed as a time window. At organization scale the important addition is that these are set **per workload tier**, not once for the company — paying active-active prices for an internal reporting tool is as much an architecture failure as giving the payments system nightly backups.
 
@@ -263,78 +492,30 @@ A data perimeter answers "only my identities, from my networks, to my resources.
 
 **AWS Elastic Disaster Recovery (DRS)** — continuous block-level replication of whole servers, giving RTO in minutes and RPO in seconds without paying for a full active-active footprint. It is the pragmatic middle option, and often the right answer when a question demands "minutes, not hours" but rules out running two live Regions.
 
-#### Backup Strategy at Scale
-
-- **AWS Backup** — organization-wide backup plans, applied by tag and managed through a delegated administrator account
-- **Cross-Region copy** — required by many regulators, and the only protection against losing an entire Region
-- **Immutable backups (Vault Lock)** — the defense against ransomware, which increasingly targets the backups first. A backup an attacker with admin credentials can delete is not a backup
-
 ---
 
-### Task 1.4: Multi-Account AWS Environment
+## Backup Strategy at Scale
 
 [↑ Content](#content)
 
-#### Account Structure (Typical)
+| Control | Why it exists at this scale |
+|---------|----------------------------|
+| **AWS Backup organization-wide plans** | Backup policy defined centrally in Organizations and applied by tag, so protection is inherited rather than remembered. Managed through a delegated administrator account |
+| **Cross-Region copy** | Required by many regulators, and the only protection against losing an entire Region |
+| **Cross-account copy** | The control that matters most against a compromised credential — a copy in an account the attacker cannot reach |
+| **Vault Lock (compliance mode)** | Immutable retention that nobody can shorten, including the root user and AWS Support |
+| **Logically air-gapped vaults** | AWS-owned, encrypted vaults that can be shared for restore to another account, giving recovery even if the source account is destroyed |
+| **Restore testing** | Scheduled automated restores that validate the backups actually work. Untested backups are a hypothesis |
 
-An **OU** (Organizational Unit) is a folder of accounts inside AWS Organizations; policies attach to an OU and are inherited by every account within it, which is what makes this structure worth designing carefully.
-
-| OU / Account | Purpose |
-|--------------|---------|
-| **Management** | Owns AWS Organizations, SCPs, and consolidated billing. Runs **no workloads** — it cannot be restricted by SCPs, so anything in it is effectively unguarded |
-| **Security** | Log archive, GuardDuty administration, Security Hub. Write-once for logs; workload teams have no delete rights |
-| **Infrastructure** | Shared networking (Transit Gateway, DNS, IPAM) and the CI/CD tooling accounts |
-| **Workloads** | Dev / Test / Prod accounts, one set per product line or business unit |
-| **Sandbox** | Experimentation, with strict SCPs and a hard budget limit |
-
-**Why so many accounts rather than one big one:** the account is AWS's strongest isolation boundary. It separates IAM, service quotas, and billing simultaneously — so a runaway dev workload cannot exhaust production's quotas, a compromised dev credential cannot reach production data, and cost attribution needs no tagging discipline. The cost is that everything cross-account (networking, deployment, logging) needs deliberate plumbing, which is precisely what this domain tests.
-
-#### Control Tower vs Manual Organizations
-
-| Approach | When |
-|----------|------|
-| **Control Tower** | A greenfield organization that wants a pre-built **landing zone** (baseline multi-account setup with logging and guardrails) plus **Account Factory** for vending new accounts |
-| **Organizations + custom IaC** | An existing organization, a mature platform team, or requirements Control Tower's opinions do not fit |
-
-**The honest trade-off:** Control Tower is faster to a compliant baseline and harder to customize later; hand-built Organizations is the reverse. A frequent Professional-exam scenario is an existing 40-account organization that wants Control Tower — the answer is that Control Tower can *enroll* existing accounts, but only after their configuration is reconciled with the landing zone's expectations, which is the real project.
-
-**SCP rules:** Deny list only — cannot grant permissions. Example: deny `ec2:RunInstances` except approved instance types; deny root user actions; deny Regions outside an allowlist.
-
-#### Choosing Among the Three Policy Types
-
-| Requirement | Right tool |
-|-------------|-----------|
-| "Nobody in dev may create resources outside eu-central-1" | **SCP** (limits principals) |
-| "No external principal may read any bucket we own" | **RCP** (limits resources) |
-| "No VPC may have an internet gateway, permanently" | **Declarative policy** (enforces configuration) |
-| "This team may deploy only these services" | **SCP** on their OU |
-| "Snapshots and AMIs must never be public" | **Declarative policy** |
-
-**Deeper understanding:** a common design error is reaching for SCPs for everything. SCPs are blind to access that does not originate from your organization's principals — an externally shared bucket is a resource-side problem, so it needs an RCP. And any control expressible as a *configuration* is better as a declarative policy, because it keeps holding when AWS ships a new API that your action-based deny list has never heard of.
+**The reasoning to be able to articulate:** modern ransomware targets backups first, because an attacker who encrypts data while leaving recoverable backups has no leverage. So the design requirement is not "we take backups" but "no single compromised identity can destroy both the data and every copy of it." That decomposes into three properties — a copy in a different account, immutability with a retention period nobody can shorten, and a tested restore path — and a design missing any one of them fails the requirement regardless of how many backups it takes.
 
 ---
 
-### Task 1.5: Cost Optimization and Visibility
-
-[↑ Content](#content)
-
-| Tool | Purpose |
-|------|---------|
-| **Cost Explorer** | Trend analysis, forecasting, and **RI/SP** (Reserved Instance / Savings Plan) purchase recommendations |
-| **AWS Budgets** | Alerts, and optionally automated actions, when spend crosses a threshold |
-| **CUR** (Cost and Usage Report) | Raw line-item billing data delivered to S3, queried with Athena or Amazon Quick |
-| **Compute Optimizer** | Right-sizing recommendations for EC2, EBS, Lambda, and **ASG** (Auto Scaling Group) |
-| **S3 Storage Lens** | Organization-wide S3 usage and optimization metrics |
-| **Trusted Advisor** | Best-practice checks across cost, security, and limits (full checks need Business or Enterprise Support) |
-| **Pricing Calculator** | Cost estimates *before* deployment, for architecture comparisons |
-
-**Tagging strategy:** mandatory tags such as `CostCenter`, `Environment`, and `Owner`, enforced at creation time by an SCP using the `aws:RequestTag` condition and audited afterwards by AWS Config rules. Note the step everyone forgets: a tag does nothing for cost reporting until it is **activated as a cost allocation tag** in the billing console, and activation is not retroactive — untagged historical spend stays unattributable, which is why this is set up on day one rather than during the first budget crisis.
+# Part VI — Designing and Improving Solutions at Scale
 
 ---
 
-## Domain 2: Design for New Solutions (29%)
-
-### Task 2.1: Deployment Strategy
+## Deployment and Release Strategy
 
 [↑ Content](#content)
 
@@ -353,7 +534,7 @@ An **OU** (Organizational Unit) is a folder of accounts inside AWS Organizations
 
 ---
 
-### Task 2.2: Business Continuity
+## Business Continuity for New Solutions
 
 [↑ Content](#content)
 
@@ -372,13 +553,13 @@ Design for **Region-level** failure when RTO/RPO requires it:
 
 - Regular **game days** — simulate Region failure and measure actual RTO/RPO rather than the documented one
 
-See [SAA-C03 DR table](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md#task-22-highly-available-and-fault-tolerant-architectures) for strategy definitions.
+See [Resilience and Disaster Recovery](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md#resilience-and-disaster-recovery) in the Associate guide for the four strategy definitions and the RTO/RPO arithmetic.
 
 **Deeper understanding:** the failover mechanism is usually the weakest link, not the data replication. A DR plan that depends on the control plane of the failed Region, or on a human running a runbook nobody has rehearsed, has a much worse real RTO than its design document claims. This is why ARC exists and why game days are non-negotiable.
 
 ---
 
-### Task 2.3: Security Controls for New Solutions
+## Security Controls for New Solutions
 
 [↑ Content](#content)
 
@@ -395,7 +576,7 @@ Greenfield checklist:
 
 ---
 
-### Task 2.4: Reliability Strategy
+## Reliability Engineering at Scale
 
 [↑ Content](#content)
 
@@ -410,7 +591,7 @@ Greenfield checklist:
 
 ---
 
-### Task 2.5: Performance Objectives
+## Performance at Scale
 
 [↑ Content](#content)
 
@@ -427,7 +608,7 @@ Greenfield checklist:
 
 ---
 
-### Task 2.6: Cost Optimization Strategy
+## Cost Strategy for New Solutions
 
 [↑ Content](#content)
 
@@ -441,9 +622,7 @@ Greenfield cost design:
 
 ---
 
-## Domain 3: Continuous Improvement for Existing Solutions (25%)
-
-### Task 3.1: Operational Excellence
+## Operational Excellence at Scale
 
 [↑ Content](#content)
 
@@ -459,7 +638,7 @@ Greenfield cost design:
 
 ---
 
-### Task 3.2: Security Improvements
+## Improving Security in Existing Environments
 
 [↑ Content](#content)
 
@@ -475,7 +654,7 @@ Retrofit sequence (typical):
 
 ---
 
-### Task 3.3: Performance Improvements
+## Improving Performance in Existing Environments
 
 [↑ Content](#content)
 
@@ -487,7 +666,7 @@ Retrofit sequence (typical):
 
 ---
 
-### Task 3.4: Reliability Improvements
+## Improving Reliability in Existing Environments
 
 [↑ Content](#content)
 
@@ -499,7 +678,7 @@ Retrofit sequence (typical):
 
 ---
 
-### Task 3.5: Cost Optimization Opportunities
+## Finding Cost Optimization Opportunities
 
 [↑ Content](#content)
 
@@ -514,9 +693,11 @@ Retrofit sequence (typical):
 
 ---
 
-## Domain 4: Accelerate Workload Migration and Modernization (20%)
+# Part VII — Migration and Modernization
 
-### Task 4.1: Migration Assessment and Wave Planning
+---
+
+## Migration Assessment and Wave Planning
 
 [↑ Content](#content)
 
@@ -534,11 +715,11 @@ Retrofit sequence (typical):
 
 ---
 
-### Task 4.2: Optimal Migration Approach
+## Choosing a Migration Approach
 
 [↑ Content](#content)
 
-#### The 6 R's
+### The 6 R's
 
 The "6 R's" is AWS's standard vocabulary for what you *do* with each application you find. Every migration plan classifies its portfolio into these six buckets.
 
@@ -553,7 +734,7 @@ The "6 R's" is AWS's standard vocabulary for what you *do* with each application
 
 **The sequencing insight that separates a Professional answer from an Associate one:** rehost first, refactor later, is usually correct even though refactoring delivers more value. Rehosting exits the data center (which is what stops the contract renewal and the hardware refresh), and it does so with a rollback path. Refactoring while simultaneously migrating doubles the number of things that can be blamed when something breaks. The exception is an application already at end of life, where rehosting means paying to move something you are about to delete — which is what "Retire" and "Repurchase" are for.
 
-#### Migration Tools
+### Migration Tools
 
 | Tool | Use case |
 |------|----------|
@@ -570,7 +751,7 @@ The "6 R's" is AWS's standard vocabulary for what you *do* with each application
 
 ---
 
-### Task 4.3: New Architecture for Existing Workloads
+## Re-architecting Existing Workloads
 
 [↑ Content](#content)
 
@@ -585,7 +766,7 @@ After lift-and-shift, evolve toward:
 
 ---
 
-### Task 4.4: Modernization and Enhancements
+## Modernization and Enhancements
 
 [↑ Content](#content)
 
@@ -612,6 +793,8 @@ After lift-and-shift, evolve toward:
 **Modernization ROI** (Return on Investment): measure operations hours saved, deployment frequency, incident rate, and licensing removed — not just the infrastructure bill. A migration that halves the EC2 bill but doubles deployment friction is not a win, and the reverse is often the better trade.
 
 ---
+
+# Part VIII — Platform Automation
 
 ## For Engineers: Platform Automation at Org Scale
 
@@ -777,6 +960,88 @@ ORDER BY untagged_cost DESC;
 ```
 
 **Deeper understanding:** the account is the cleanest cost boundary, which is one reason mature organizations give each team its own account rather than relying on tags inside a shared one. Tags remain necessary for cross-cutting attribution (per-environment, per-customer), but a tag can be forgotten and an account cannot. Enforce at creation time with an SCP, because retrofitting tags onto existing resources is manual work nobody schedules.
+
+---
+
+# Part IX — Exam Preparation (SAP-C02)
+
+Everything before this point is architecture knowledge that outlives any certification. This part is specifically about passing SAP-C02.
+
+---
+
+## Exam at a Glance
+
+[↑ Content](#content)
+
+| Fact | Value |
+|------|-------|
+| Exam code | SAP-C02 |
+| Format | 75 questions (65 scored + 10 unscored), 180 minutes |
+| Passing score | 750 / 1000 |
+| Prerequisite experience | Two or more years designing AWS solutions |
+| Companion cert | SAA-C03 (recommended, not required) |
+
+**Domain weights:**
+
+| Domain | Weight |
+|--------|--------|
+| Design Solutions for Organizational Complexity | 26% |
+| Design for New Solutions | 29% |
+| Continuous Improvement for Existing Solutions | 25% |
+| Accelerate Workload Migration and Modernization | 20% |
+
+**Professional versus Associate:** Associate asks "which service?" Professional asks "which sequence, which scope, and what do we defer?"
+
+**How to survive the format.** Questions are long — often a full screen — and the reading is the work. Two habits help materially: read the *last sentence first* to learn what is actually being asked before absorbing the vignette, and mark for review rather than agonizing, because 180 minutes across 75 long questions is about 2.4 minutes each with no slack for perfectionism.
+
+---
+
+## Exam Domain Map
+
+[↑ Content](#content)
+
+The exam organizes by design activity; this guide organizes by subject. Use this to revise by domain.
+
+| Exam domain | Weight | Where the knowledge lives here |
+|-------------|--------|--------------------------------|
+| **1. Organizational Complexity** | 26% | [Part II — The Multi-Account Organization](#part-ii--the-multi-account-organization) in full; [Part III — Networking at Scale](#part-iii--networking-at-scale); [Part IV — Security and Governance at Scale](#part-iv--security-and-governance-at-scale) |
+| **2. Design for New Solutions** | 29% | [Deployment and Release Strategy](#deployment-and-release-strategy), [Business Continuity for New Solutions](#business-continuity-for-new-solutions), [Security Controls for New Solutions](#security-controls-for-new-solutions), [Reliability Engineering at Scale](#reliability-engineering-at-scale), [Performance at Scale](#performance-at-scale), [Cost Strategy for New Solutions](#cost-strategy-for-new-solutions) |
+| **3. Continuous Improvement** | 25% | [Operational Excellence at Scale](#operational-excellence-at-scale) and the four "Improving..." chapters that follow it |
+| **4. Migration and Modernization** | 20% | [Part VII — Migration and Modernization](#part-vii--migration-and-modernization) in full |
+
+**Cross-cutting:** [What Changes at Organizational Scale](#what-changes-at-organizational-scale) for the reasoning style the exam rewards, [What Changed Recently](#what-changed-recently-professional-scope) for answers that older material gets wrong, and [Part VIII](#part-viii--platform-automation) for how the guardrails are actually implemented.
+
+---
+
+## What Changed Recently (Professional Scope)
+
+[↑ Content](#content)
+
+The Professional exam is more exposed to service change than the Associate exam, because governance and migration tooling has moved quickly. These are the changes that alter a *correct answer* rather than merely adding an option.
+
+### Governance: two new policy types
+
+The three policy types are taught in [The Three Policy Types](#the-three-policy-types). What matters for exam purposes is that older material presents SCPs as the only organization-level guardrail, so any question about preventing external sharing of resources across many accounts now has a better answer (an RCP) than the one older guides give, and any question about a configuration that must stay enforced as APIs evolve has a better answer than an action-based deny list (a declarative policy).
+
+### Data layer: multi-Region writes became possible
+
+**Aurora DSQL** (GA May 2025) provides active-active multi-Region writes with strong consistency. This genuinely changes the honest answer to "global application with strongly consistent writes," which previously forced you into a single write Region or application-level conflict resolution. The cost is a reduced PostgreSQL surface (no foreign keys, limited extensions), so it is a greenfield choice rather than a migration target for an existing schema.
+
+### Migration tooling: the offline path changed, and modernization got agents
+
+| Change | Effect on answers |
+|--------|-------------------|
+| **Snowmobile retired** (2024), **Snowcone discontinued** (2024), **Snowball Edge existing-customers-only** (Nov 2025) | For new projects, bulk transfer means **DataSync**, **AWS Data Transfer Terminal** (physical drop-off at an AWS location), or partner solutions; **Outposts** for edge compute |
+| **AWS Transform** | Agentic migration and modernization for **VMware**, **mainframe**, and **Windows/.NET** workloads. The .NET agent modernizes Windows-based .NET applications to Linux and targets substantial Windows licensing savings; assessment and the VMware, mainframe, and Windows agents are currently free |
+| **Migration Hub / Application Discovery** | Still the tracking and inventory layer; AWS Transform sits above them for assessment and code transformation |
+
+**Why AWS Transform matters for a .NET shop specifically:** the classic "rehost the Windows fleet and keep paying Windows licensing" answer now has a credible middle path — port .NET Framework applications to modern .NET on Linux, then run them on Graviton containers. That converts a recurring licensing cost into a one-off engineering project, which is exactly the trade-off a Professional-level question wants you to articulate.
+
+### Cost and operations
+
+- **Cost Optimization Hub** consolidates and deduplicates recommendations across accounts — increasingly the right answer where older material says "Trusted Advisor."
+- **Database Savings Plans** (Dec 2025) extend commitment-based discounts to database services including DynamoDB.
+- **AWS Backup logically air-gapped vaults** and **Vault Lock** are the current answers for ransomware-resilient, shareable backup copies.
 
 ---
 
@@ -1056,14 +1321,14 @@ ORDER BY untagged_cost DESC;
 
 **Prerequisite:** Score ≥80% on two consecutive SAA-C03 practice exams.
 
-| Week | Focus | Activities |
-|------|-------|------------|
-| 1 | Domain 1 — org complexity | Control Tower lab; TGW + DX architecture diagrams; P1, P2, P5, P6; [PA1](#pa1-multi-account-deployment-pipelines) |
-| 2 | Domain 1 — security & cost at scale | Org CloudTrail, GuardDuty admin; SCP/RCP/declarative policy drill; tagging/CUR; P9, P10, P16; [PA2](#pa2-guardrails-as-code), [PA5](#pa5-cost-attribution-automation) |
-| 3 | Domain 2 — greenfield design | Blue/green, multi-Region DR; P4, P7, P27; Well-Architected lab; [PA3](#pa3-cross-account-application-wiring) |
-| 4 | Domain 3 — continuous improvement | Retrofit sequences; Compute Optimizer; P13, P26, P30; [PA4](#pa4-automated-remediation) |
-| 5 | Domain 4 — migration | DMS/MGN labs; 6 R's case studies; .NET modernization ladder; P3, P11, P12, P15 |
-| 6 | Timed practice | 2× 75-question sets (180 min); review all vignettes; weak-domain drill |
+| Week | Focus | Read | Practice |
+|------|-------|------|----------|
+| 1 | The multi-account organization | [Part I](#part-i--the-professional-mindset), [Part II](#part-ii--the-multi-account-organization) | Control Tower lab; write an SCP and an RCP and test both; P1, P5, P6; [PA1](#pa1-multi-account-deployment-pipelines) |
+| 2 | Networking and security at scale | [Part III](#part-iii--networking-at-scale), [Part IV](#part-iv--security-and-governance-at-scale) | TGW plus DX diagrams from memory; organization CloudTrail and GuardDuty delegated admin; P2, P9, P14; [PA2](#pa2-guardrails-as-code) |
+| 3 | Resilience and greenfield design | [Part V](#part-v--resilience-at-organizational-scale), [Part VI](#part-vi--designing-and-improving-solutions-at-scale) first half | Blue/green and multi-Region DR labs; Vault Lock; P4, P7, P19, P27; [PA3](#pa3-cross-account-application-wiring) |
+| 4 | Continuous improvement | [Part VI](#part-vi--designing-and-improving-solutions-at-scale) second half | Retrofit sequences; Compute Optimizer; cost attribution with CUR in Athena; P13, P26, P30; [PA4](#pa4-automated-remediation), [PA5](#pa5-cost-attribution-automation) |
+| 5 | Migration and modernization | [Part VII](#part-vii--migration-and-modernization) | DMS and MGN labs; 6 R's case studies; the .NET modernization ladder; P3, P11, P12, P15 |
+| 6 | Timed practice | [Exam Domain Map](#exam-domain-map), [Rapid Answers](#rapid-answers) | Two 75-question sets at 180 minutes; review every vignette; drill the weakest domain |
 
 **Daily routine (~90 min):**
 
@@ -1071,50 +1336,6 @@ ORDER BY untagged_cost DESC;
 2. Official docs deep dive on missed services (30 min)
 3. Draw architecture from memory (20 min)
 4. Trade-off matrix for one design decision (20 min)
-
----
-
-## References
-
-[↑ Content](#content)
-
-### Official AWS
-
-| Resource | URL |
-|----------|-----|
-| SAP-C02 Exam Guide | https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-professional-02/solutions-architect-professional-02.html |
-| AWS Control Tower | https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html |
-| AWS Prescriptive Guidance — Migration | https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-approach/welcome.html |
-| AWS Well-Architected Framework | https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html |
-| AWS Organizations | https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html |
-| Transit Gateway | https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html |
-| AWS Skill Builder — SAP-C02 | https://skillbuilder.aws/ |
-| Resource control policies (RCPs) | https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps.html |
-| Declarative policies | https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_declarative.html |
-| Data perimeters on AWS | https://aws.amazon.com/identity/data-perimeters-on-aws/ |
-| AWS Transform | https://aws.amazon.com/transform/ |
-| Aurora DSQL | https://docs.aws.amazon.com/aurora-dsql/latest/userguide/what-is-aurora-dsql.html |
-| Route 53 Application Recovery Controller | https://docs.aws.amazon.com/r53recovery/latest/dg/what-is-route53-recovery.html |
-| Multi-Region fundamentals (whitepaper) | https://docs.aws.amazon.com/whitepapers/latest/aws-multi-region-fundamentals/aws-multi-region-fundamentals.html |
-| AWS Builders' Library (operational patterns) | https://aws.amazon.com/builders-library/ |
-
-### Companion Material
-
-| Resource | URL |
-|----------|-----|
-| [SAA-C03 Associate Cheat Sheet](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md) | Service fundamentals and Associate scenarios |
-| [SAA-C03 engineering section](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md#for-software-engineers-sdk-iac-and-code-patterns) | SDK, IaC, and application-level code patterns |
-| AWS Whitepapers — Overview of AWS, Hybrid Connectivity, Migration | https://aws.amazon.com/whitepapers/ |
-
-### Books (Optional)
-
-- *AWS Certified Solutions Architect Professional Study Guide: SAP-C02 Exam* — Ben Piper & David Clinton (Sybex/Wiley)
-
-### Practice
-
-- Tutorials Dojo SAP-C02 practice exams
-- Jon Bonso SAP-C02 practice tests (Udemy)
-- AWS Official Practice Question Sets on Skill Builder
 
 ---
 
@@ -1212,6 +1433,55 @@ ORDER BY untagged_cost DESC;
 - [ ] Complete 75-question timed practice (≥80%)
 - [ ] Explain trade-offs, not just service names
 - [ ] Draw org + network diagram from memory in <5 min
+
+---
+
+# Part X — Reference
+
+## References
+
+[↑ Content](#content)
+
+### Official AWS
+
+| Resource | URL |
+|----------|-----|
+| SAP-C02 Exam Guide | https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-professional-02/solutions-architect-professional-02.html |
+| AWS Control Tower | https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html |
+| AWS Prescriptive Guidance — Migration | https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-approach/welcome.html |
+| AWS Well-Architected Framework | https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html |
+| AWS Organizations | https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html |
+| Transit Gateway | https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html |
+| Direct Connect resiliency recommendations | https://docs.aws.amazon.com/directconnect/latest/UserGuide/high_resiliency_selection.html |
+| IAM Identity Center | https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html |
+| AWS Skill Builder — SAP-C02 | https://skillbuilder.aws/ |
+| Resource control policies (RCPs) | https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps.html |
+| Declarative policies | https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_declarative.html |
+| Data perimeters on AWS | https://aws.amazon.com/identity/data-perimeters-on-aws/ |
+| AWS Transform | https://aws.amazon.com/transform/ |
+| Aurora DSQL | https://docs.aws.amazon.com/aurora-dsql/latest/userguide/what-is-aurora-dsql.html |
+| Route 53 Application Recovery Controller | https://docs.aws.amazon.com/r53recovery/latest/dg/what-is-route53-recovery.html |
+| Multi-Region fundamentals (whitepaper) | https://docs.aws.amazon.com/whitepapers/latest/aws-multi-region-fundamentals/aws-multi-region-fundamentals.html |
+| AWS Builders' Library (operational patterns) | https://aws.amazon.com/builders-library/ |
+
+### Companion Material
+
+| Resource | URL |
+|----------|-----|
+| [SAA-C03 Associate guide](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md) | The services taught in depth, plus Associate-level scenarios |
+| [Associate engineering section](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md#for-software-engineers-sdk-iac-and-code-patterns) | SDK, IaC, and application-level code patterns |
+| [Associate glossary](AWS_Solutions_Architect_Associate_SAA-C03_Cheat_Sheet.md#glossary-and-abbreviations) | Shared AWS and general-computing vocabulary |
+| AWS Whitepapers — Overview of AWS, Hybrid Connectivity, Migration | https://aws.amazon.com/whitepapers/ |
+
+### Books (Optional)
+
+- *AWS Certified Solutions Architect Professional Study Guide: SAP-C02 Exam* — Ben Piper & David Clinton (Sybex/Wiley)
+
+### Practice
+
+- Tutorials Dojo SAP-C02 practice exams
+- Jon Bonso SAP-C02 practice tests (Udemy)
+- AWS Official Practice Question Sets on Skill Builder
 
 ---
 
