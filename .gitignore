@@ -1,0 +1,94 @@
+# Allowlist: everything at the root is private unless re-included below.
+# New folders (Clippings/, .obsidian/, exports) stay local by default.
+/*
+
+# Shared template: docs, agent skills and templates, assets, study notes
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/AGENTS.md
+!/.ai/
+!/.assets/
+!/study/
+!/.githooks/
+
+# Agent rules, commands, and skills are shared; local MCP config is not
+!/.cursor/
+/.cursor/*
+!/.cursor/rules/
+!/.cursor/commands/
+!/.cursor/skills/
+
+# Private vault folders: only the empty skeleton (index pages, .gitkeep) is published.
+# Run .ai/scripts/protect-vault.ps1 once so local edits to these pages are never staged.
+!/meetings/
+/meetings/**
+!/meetings/**/
+!/meetings/.gitkeep
+!/meetings/Meetings.md
+!/meetings/2026/2026.md
+
+!/people/
+/people/**
+!/people/People.md
+
+!/projects/
+/projects/**
+!/projects/Projects.md
+
+!/decisions/
+/decisions/**
+!/decisions/Decisions.md
+
+!/notes/
+/notes/**
+!/notes/Notes.md
+
+!/tasks/
+/tasks/**
+!/tasks/Tasks.md
+
+!/journal/
+/journal/**
+!/journal/Journal.md
+
+!/dashboards/
+/dashboards/**
+!/dashboards/Dashboards.md
+!/dashboards/Open_Tasks.md
+!/dashboards/Follow_Ups.md
+!/dashboards/Active_Projects.md
+
+!/inbox/
+/inbox/**
+!/inbox/**/
+!/inbox/.gitkeep
+!/inbox/Inbox.md
+!/inbox/_processed/Processed.md
+!/inbox/audio/.gitkeep
+
+# Secrets, anywhere, even inside shared folders
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+**/mcp.json
+!**/mcp.example.json
+**/*secret*
+**/*credentials*
+
+# Raw audio and video never leave this machine
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+*.webm
+*.mp4
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+.trash/

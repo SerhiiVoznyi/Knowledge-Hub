@@ -1,0 +1,17 @@
+#!/bin/sh
+# Refuses commits that add or change files in the private vault folders.
+# Only the empty skeleton is published; change it on purpose with ALLOW_SKELETON=1.
+# Deletions are allowed, so private files can always be untracked.
+
+[ "$ALLOW_SKELETON" = "1" ] && exit 0
+
+blocked=$(git diff --cached --name-only --diff-filter=ACMR |
+  grep -E '^(meetings|people|projects|decisions|notes|tasks|journal|dashboards|inbox|Clippings)/')
+
+if [ -n "$blocked" ]; then
+  echo "pre-commit: refusing to commit private vault content:" >&2
+  echo "$blocked" | sed 's/^/  /' >&2
+  echo "Unstage with: git restore --staged <path>" >&2
+  echo "To change the published skeleton on purpose: ALLOW_SKELETON=1 git commit ..." >&2
+  exit 1
+fi
