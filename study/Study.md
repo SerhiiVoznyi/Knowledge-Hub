@@ -10,3 +10,4 @@ Study notes and interview cheat sheets, one folder per topic. Every note follows
 - [databases](databases/Databases.md) — SQL and PostgreSQL
 - [algorithms](algorithms/Algorithms.md) — searching, sorting, and interview patterns
 - [aws](aws/AWS.md) — AWS Solutions Architect Associate and Professional
+- [agile](agile/Agile.md) — Scrum and a comparison of Agile frameworks
